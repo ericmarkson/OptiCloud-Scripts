@@ -1,2 +1,2 @@
 # EpiCloud-Scripts
-This is a set of that is useful to be able to publish into the DXP Environment
+This is a set of scripts that will help you publish your website into the DXP environment in a reusable way.
