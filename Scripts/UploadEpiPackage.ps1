@@ -5,7 +5,7 @@
 #              release and push it up to a selected environment. This is
 #              developed to be used in the DevOps Release Pipeline.
 #
-# Version:     1.0g
+# Version:     1.0
 #
 # Last Updated: 5/6/2020
 #

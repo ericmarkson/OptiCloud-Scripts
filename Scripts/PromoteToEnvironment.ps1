@@ -4,7 +4,7 @@
 # Summary:     This script will take the Code, Database, and/or the Blobs 
 #              from an environment and promote them to another environment
 #
-# Version:     1.0g
+# Version:     1.0
 #
 # Last Updated: 5/6/2020
 #

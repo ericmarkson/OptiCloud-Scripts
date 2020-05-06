@@ -5,7 +5,7 @@
 #              specified environment and begin the export, and return a
 #              download link for the bacpac file.
 #
-# Version:     1.0g
+# Version:     1.0
 #
 # Last Updated: 5/6/2020
 #

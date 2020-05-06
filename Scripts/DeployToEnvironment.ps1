@@ -6,7 +6,7 @@
 #              Blob, or DB file must be uploaded using the
 #              Add-EpiDeploymentPackage command.
 #
-# Version:     1.0g
+# Version:     1.0
 #
 # Last Updated: 5/6/2020
 #
