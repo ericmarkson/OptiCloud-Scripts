@@ -43,7 +43,10 @@ param
     [bool]$IncludeBlobs,
     [Parameter(Position=7)]
     [ValidateSet($true, $false, 0, 1)]
-    [bool]$IncludeDb
+    [bool]$IncludeDb,
+    [Parameter(Position=8, Mandatory)]
+    [ValidateSet('cms','commerce')]
+    [String] $SourceApp
     
   )
 
@@ -89,6 +92,7 @@ $startEpiDeploymentSplat = @{
     IncludeDb = $IncludeDb
     ClientSecret = "$ClientSecret"
     ClientKey = "$ClientKey"
+    SourceApp = "$SourceApp"
 }
 
 Write-Host "Starting the Deployment to" $TargetEnvironment
