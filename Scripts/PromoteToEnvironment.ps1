@@ -44,9 +44,9 @@ param
     [Parameter(Position=7)]
     [ValidateSet($true, $false, 0, 1)]
     [bool]$IncludeDb,
-    [Parameter(Position=8, Mandatory)]
+    [Parameter(Position=8)]
     [ValidateSet('cms','commerce')]
-    [String[]] $SourceApp
+    [String] $SourceApp
     
   )
 
