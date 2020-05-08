@@ -6,6 +6,9 @@
 trigger:
 - master
 
+variables:
+- group: Deployment Keys
+
 pool:
   vmImage: 'windows-latest'
 
