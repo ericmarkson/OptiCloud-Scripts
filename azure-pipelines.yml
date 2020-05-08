@@ -19,8 +19,6 @@ steps:
     targetType: filePath
     filePath: './scripts/ExportDatabase.ps1'
     arguments: '-ClientKey $(dxp.clientkey) -ClientSecret $(dxp.clientsecret) -ProjectId $(dxp.projectid) -TargetEnvironment Production -DatabaseName epicms'
-
-steps:
 - task: PowerShell@2
   displayName: 'PowerShell Script'
   inputs:
