@@ -33,7 +33,11 @@ param
     [ValidateSet("Reset","Complete")]
     [string]$Action,
     [Parameter(Position=4)]
-    [string]$DeploymentId
+    [string]$DeploymentId,
+    [Parameter(Position=5, Mandatory)]
+    [ValidateSet("Integration", "Preproduction", "Production")]
+    [ValidateNotNullOrEmpty()]
+    [string]$targetEnvironment
   )
 
 #Checking that the required params exist and are not white space
@@ -64,6 +68,7 @@ if([string]::IsNullOrWhiteSpace($DeploymentId)){
         ProjectId = "$ProjectID"
         ClientSecret = "$ClientSecret"
         ClientKey = "$ClientKey"
+        id = ""
 }
     }else{
         $getEpiDeploymentSplat = @{
@@ -75,13 +80,15 @@ if([string]::IsNullOrWhiteSpace($DeploymentId)){
 }
 
 #Search for Deployment based on the provided object
-$currDeploy = Get-EpiDeployment @getEpiDeploymentSplat | Select-Object -First 1
+$currDeploy = Get-EpiDeployment @getEpiDeploymentSplat  
 
 #If DeploymentID is not set, search for it using the previously found deployment
 if([string]::IsNullOrWhiteSpace($DeploymentId)){
     Write-Host "No Deployment ID Supplied. Searching for In-Progress Deployment..."
+    $currDeploy = $currDeploy | Where-Object {$_.endTime -eq $null} | Where-Object {$_.parameters.targetEnvironment -eq $targetEnvironment}
     $DeploymentId = $currDeploy | Select -ExpandProperty "id"
     Write-Host "Deployment ID Found: $DeploymentId"
+    $getEpiDeploymentSplat.id = $DeploymentId
 }
 
 Write-Host "Setting up the deployment configuration"
