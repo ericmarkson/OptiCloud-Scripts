@@ -37,14 +37,14 @@ param
     [string]$TargetEnvironment,
     [Parameter(Position=5)]
     [ValidateSet($true, $false, 0, 1)]
-    [bool]$UseMaintenancePage,
+    [bool]$UseMaintenancePage = 0,
     [Parameter(Position=6)]
     [ValidateSet($true, $false, 0, 1)]
-    [bool]$IncludeBlobs,
+    [bool]$IncludeBlobs = 0,
     [Parameter(Position=7)]
     [ValidateSet($true, $false, 0, 1)]
-    [bool]$IncludeDb,
-    [Parameter(Position=8)]
+    [bool]$IncludeDb = 0,
+    [Parameter(Position=8, Mandatory)]
     [ValidateSet('cms','commerce')]
     [String] $SourceApp
     
