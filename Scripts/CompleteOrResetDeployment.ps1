@@ -85,7 +85,7 @@ $currDeploy = Get-EpiDeployment @getEpiDeploymentSplat
 #If DeploymentID is not set, search for it using the previously found deployment
 if([string]::IsNullOrWhiteSpace($DeploymentId)){
     Write-Host "No Deployment ID Supplied. Searching for In-Progress Deployment..."
-    $currDeploy = $currDeploy | Where-Object {$_.endTime -eq $null} | Where-Object {$_.parameters.targetEnvironment -eq $targetEnvironment} | Sort-Object -Property startTime -Descending | Select-Object -First 1
+    $currDeploy = $currDeploy | Where-Object {$_.endTime -eq $null} | Where-Object {$_.parameters.targetEnvironment -eq $targetEnvironment -and $_.percentComplete -eq "100"} | Sort-Object -Property startTime -Descending | Select-Object -First 1
     $DeploymentId = $currDeploy | Select -ExpandProperty "id"
     Write-Host "Deployment ID Found: $DeploymentId"
     $getEpiDeploymentSplat.id = $DeploymentId
