@@ -6,7 +6,7 @@
 #
 # Version:     1.0
 #
-# Last Updated: 5/6/2020
+# Last Updated: 7/15/2020
 #
 # Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://www.epivisuals.dev
 #
@@ -40,11 +40,14 @@ param
     [bool]$UseMaintenancePage = 0,
     [Parameter(Position=6)]
     [ValidateSet($true, $false, 0, 1)]
-    [bool]$IncludeBlobs = 0,
+    [bool]$IncludeCode = 1,
     [Parameter(Position=7)]
     [ValidateSet($true, $false, 0, 1)]
+    [bool]$IncludeBlobs = 0,
+    [Parameter(Position=8)]
+    [ValidateSet($true, $false, 0, 1)]
     [bool]$IncludeDb = 0,
-    [Parameter(Position=8, Mandatory)]
+    [Parameter(Position=9)]
     [ValidateSet('cms','commerce')]
     [String] $SourceApp
     
@@ -81,19 +84,38 @@ if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
 
 Write-Host "Setting up the deployment configuration"
 
-#Setting up the object for the EpiServer environment deployment
-$startEpiDeploymentSplat = @{
-    ProjectId = "$ProjectID"
-    Wait = $false
-    TargetEnvironment = "$TargetEnvironment"
-    SourceEnvironment = "$SourceEnvironment"
-    UseMaintenancePage = $UseMaintenancePage
-    IncludeBlob = $IncludeBlobs
-    IncludeDb = $IncludeDb
-    ClientSecret = "$ClientSecret"
-    ClientKey = "$ClientKey"
-    SourceApp = "$SourceApp"
-}
+if($IncludeCode -eq $true){
+     #Setting up the object for the EpiServer environment deployment
+        $startEpiDeploymentSplat = @{
+            ProjectId = "$ProjectID"
+            Wait = $false
+            TargetEnvironment = "$TargetEnvironment"
+            SourceEnvironment = "$SourceEnvironment"
+            UseMaintenancePage = $UseMaintenancePage
+            IncludeBlob = $IncludeBlobs
+            IncludeDb = $IncludeDb
+            ClientSecret = "$ClientSecret"
+            ClientKey = "$ClientKey"
+            SourceApp = $SourceApp
+        }
+    }
+    else{
+        #Setting up the object for the EpiServer environment deployment
+        $startEpiDeploymentSplat = @{
+            ProjectId = "$ProjectID"
+            Wait = $false
+            TargetEnvironment = "$TargetEnvironment"
+            SourceEnvironment = "$SourceEnvironment"
+            UseMaintenancePage = $UseMaintenancePage
+            IncludeBlob = $IncludeBlobs
+            IncludeDb = $IncludeDb
+            ClientSecret = "$ClientSecret"
+            ClientKey = "$ClientKey"
+        }
+    }
+
+
+
 
 Write-Host "Starting the Deployment to" $TargetEnvironment
 
