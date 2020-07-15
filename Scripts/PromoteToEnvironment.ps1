@@ -40,11 +40,14 @@ param
     [bool]$UseMaintenancePage = 0,
     [Parameter(Position=6)]
     [ValidateSet($true, $false, 0, 1)]
-    [bool]$IncludeBlobs = 0,
+    [bool]$IncludeCode = 1,
     [Parameter(Position=7)]
     [ValidateSet($true, $false, 0, 1)]
+    [bool]$IncludeBlobs = 0,
+    [Parameter(Position=8)]
+    [ValidateSet($true, $false, 0, 1)]
     [bool]$IncludeDb = 0,
-    [Parameter(Position=8, Mandatory)]
+    [Parameter(Position=9, Mandatory)]
     [ValidateSet('cms','commerce')]
     [String] $SourceApp
     
@@ -88,6 +91,7 @@ $startEpiDeploymentSplat = @{
     TargetEnvironment = "$TargetEnvironment"
     SourceEnvironment = "$SourceEnvironment"
     UseMaintenancePage = $UseMaintenancePage
+    IncludeCode = $IncludeCode
     IncludeBlob = $IncludeBlobs
     IncludeDb = $IncludeDb
     ClientSecret = "$ClientSecret"
