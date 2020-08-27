@@ -96,7 +96,7 @@ Write-Host "Setting up the deployment configuration"
 #Setting up the object for the EpiServer environment deployment completion
 $completeOrResetEpiDeploymentSplat = @{
     ProjectId = "$ProjectID"
-    Id = "$DeploymentId"
+    Id = "$getEpiDeploymentSplat.id"
     Wait = $false
     ClientSecret = "$ClientSecret"
     ClientKey = "$ClientKey"
