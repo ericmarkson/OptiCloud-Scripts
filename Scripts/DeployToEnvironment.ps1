@@ -6,9 +6,9 @@
 #              Blob, or DB file must be uploaded using the
 #              Add-EpiDeploymentPackage command.
 #
-# Version:     1.0
+# Version:     1.1 - Added Zero Downtime Deploy
 #
-# Last Updated: 5/6/2020
+# Last Updated: 12/15/2020
 #
 # Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://www.epivisuals.dev
 #
@@ -39,7 +39,10 @@ param
     [Parameter(Position=5, Mandatory)]
     [ValidateNotNullOrEmpty()]
     [ValidateSet($true, $false, 0, 1)]
-    [bool]$UseMaintenancePage
+    [bool]$UseMaintenancePage,
+    [Parameter(Position=6)]
+    [ValidateSet("ReadOnly", "ReadWrite")]
+    [string]$ZeroDowntimeMode
   )
 
 #Checking that the required params exist and are not white space
@@ -61,7 +64,6 @@ if([string]::IsNullOrWhiteSpace($TargetEnvironment)){
 if([string]::IsNullOrWhiteSpace($UseMaintenancePage)){
     throw "Please provide an option for if the maintenance page should be shown. Correct values are true or false."
 }
-
 
 Write-Host "Validation passed. Starting Deployment to" $TargetEnvironment 
 Write-Host "Searching for NUPKG file..."
@@ -93,6 +95,11 @@ $startEpiDeploymentSplat = @{
     UseMaintenancePage = $UseMaintenancePage
     ClientSecret = "$ClientSecret"
     ClientKey = "$ClientKey"
+    ZeroDownTimeMode = $ZeroDownTimeMode 
+}
+
+if(![string]::IsNullOrWhiteSpace($ZeroDownTimeMode)){
+    $startEpiDeploymentSplat.Add("ZeroDownTimeMode", $ZeroDownTimeMode)
 }
 
 Write-Host "Starting the Deployment to" $TargetEnvironment

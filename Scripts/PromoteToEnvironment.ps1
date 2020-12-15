@@ -4,9 +4,9 @@
 # Summary:     This script will take the Code, Database, and/or the Blobs 
 #              from an environment and promote them to another environment
 #
-# Version:     1.0
+# Version:     1.1 - Added Zero Downtime Deploy
 #
-# Last Updated: 7/15/2020
+# Last Updated: 12/15/2020
 #
 # Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://www.epivisuals.dev
 #
@@ -49,7 +49,10 @@ param
     [bool]$IncludeDb = 0,
     [Parameter(Position=9)]
     [ValidateSet('cms','commerce')]
-    [String] $SourceApp
+    [String]$SourceApp,
+    [Parameter(Position=10)]
+    [ValidateSet("ReadOnly", "ReadWrite")]
+    [String]$ZeroDowntimeMode
     
   )
 
@@ -74,6 +77,10 @@ if($SourceEnvironment -eq $TargetEnvironment){
     throw "The source environment cannot be the same as the target environment."    
 }
 
+if(![string]::IsNullOrWhiteSpace($ZeroDowntimeMode) -and ($IncludeCode -ne $true || [string]::IsNullOrWhiteSpace($SourceApp))){
+    throw "Zero Downtime Deployment requires code to be pushed. Please use the -IncludeCode flag, and also include the -SourceApp flag"
+}
+
 Write-Host "Validation passed. Starting Deployment from $SourceEnvironment to $TargetEnvironment"
 
 #If the Module for EpiCloud is not found, install it using the force switch
@@ -84,37 +91,28 @@ if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
 
 Write-Host "Setting up the deployment configuration"
 
-if($IncludeCode -eq $true){
-     #Setting up the object for the EpiServer environment deployment
-        $startEpiDeploymentSplat = @{
+$startEpiDeploymentSplat = @{
             ProjectId = "$ProjectID"
             Wait = $false
             TargetEnvironment = "$TargetEnvironment"
             SourceEnvironment = "$SourceEnvironment"
-            UseMaintenancePage = $UseMaintenancePage
             IncludeBlob = $IncludeBlobs
             IncludeDb = $IncludeDb
             ClientSecret = "$ClientSecret"
             ClientKey = "$ClientKey"
-            SourceApp = $SourceApp
-        }
-    }
-    else{
-        #Setting up the object for the EpiServer environment deployment
-        $startEpiDeploymentSplat = @{
-            ProjectId = "$ProjectID"
-            Wait = $false
-            TargetEnvironment = "$TargetEnvironment"
-            SourceEnvironment = "$SourceEnvironment"
-            UseMaintenancePage = $UseMaintenancePage
-            IncludeBlob = $IncludeBlobs
-            IncludeDb = $IncludeDb
-            ClientSecret = "$ClientSecret"
-            ClientKey = "$ClientKey"
-        }
-    }
+}
+
+if($IncludeCode){
+    $startEpiDeploymentSplat.Add("SourceApp", $SourceApp)
+    $startEpiDeploymentSplat.Add("UseMaintenancePage", $UseMaintenancePage)
+}
 
 
+if(![string]::IsNullOrWhiteSpace($ZeroDownTimeMode)){
+    $startEpiDeploymentSplat.Add("ZeroDownTimeMode", $ZeroDownTimeMode)
+}
+
+$startEpiDeploymentSplat
 
 
 Write-Host "Starting the Deployment to" $TargetEnvironment
