@@ -95,7 +95,6 @@ $startEpiDeploymentSplat = @{
     UseMaintenancePage = $UseMaintenancePage
     ClientSecret = "$ClientSecret"
     ClientKey = "$ClientKey"
-    ZeroDownTimeMode = $ZeroDownTimeMode 
 }
 
 if(![string]::IsNullOrWhiteSpace($ZeroDownTimeMode)){
