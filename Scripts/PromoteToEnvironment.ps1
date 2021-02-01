@@ -112,9 +112,6 @@ if(![string]::IsNullOrWhiteSpace($ZeroDownTimeMode)){
     $startEpiDeploymentSplat.Add("ZeroDownTimeMode", $ZeroDownTimeMode)
 }
 
-$startEpiDeploymentSplat
-
-
 Write-Host "Starting the Deployment to" $TargetEnvironment
 
 #Starting the Deployment
