@@ -77,7 +77,7 @@ if($SourceEnvironment -eq $TargetEnvironment){
     throw "The source environment cannot be the same as the target environment."    
 }
 
-if(![string]::IsNullOrWhiteSpace($ZeroDowntimeMode) -and ($IncludeCode -ne $true || [string]::IsNullOrWhiteSpace($SourceApp))){
+if(![string]::IsNullOrWhiteSpace($ZeroDowntimeMode) -and ($IncludeCode -ne $true -or [string]::IsNullOrWhiteSpace($SourceApp))){
     throw "Zero Downtime Deployment requires code to be pushed. Please use the -IncludeCode flag, and also include the -SourceApp flag"
 }
 
