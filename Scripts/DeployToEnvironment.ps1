@@ -42,7 +42,10 @@ param
     [bool]$UseMaintenancePage,
     [Parameter(Position=6)]
     [ValidateSet("ReadOnly", "ReadWrite")]
-    [string]$ZeroDowntimeMode
+    [string]$ZeroDowntimeMode,
+    [Parameter(Position=7)]
+    [ValidateSet($true, $false, 0, 1)]
+    [bool]$DirectDeploy = 0
   )
 
 #Checking that the required params exist and are not white space
@@ -63,6 +66,9 @@ if([string]::IsNullOrWhiteSpace($TargetEnvironment)){
 }
 if([string]::IsNullOrWhiteSpace($UseMaintenancePage)){
     throw "Please provide an option for if the maintenance page should be shown. Correct values are true or false."
+}
+if($DirectDeploy -eq $true -and $TargetEnvironment.ToLower() -ne "integration"){
+    throw "Direct Deploy only works for deployments to the Integration environment."
 }
 
 Write-Host "Validation passed. Starting Deployment to" $TargetEnvironment 
@@ -96,6 +102,11 @@ $startEpiDeploymentSplat = @{
     ClientSecret = "$ClientSecret"
     ClientKey = "$ClientKey"
 }
+
+if($DirectDeploy -eq $true){
+    $startEpiDeploymentSplat.Add("DirectDeploy", $true)
+}
+
 
 if(![string]::IsNullOrWhiteSpace($ZeroDownTimeMode)){
     $startEpiDeploymentSplat.Add("ZeroDownTimeMode", $ZeroDownTimeMode)

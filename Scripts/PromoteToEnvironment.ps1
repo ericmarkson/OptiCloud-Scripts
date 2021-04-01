@@ -53,6 +53,9 @@ param
     [Parameter(Position=10)]
     [ValidateSet("ReadOnly", "ReadWrite")]
     [String]$ZeroDowntimeMode
+    [Parameter(Position=11)]
+    [ValidateSet($true, $false, 0, 1)]
+    [bool]$DirectDeploy = 0
     
   )
 
@@ -71,6 +74,9 @@ if([string]::IsNullOrWhiteSpace($TargetEnvironment)){
 }
 if([string]::IsNullOrWhiteSpace($SourceEnvironment)){
     throw "A source deployment environment is needed. Please supply one."
+}
+if($DirectDeploy -eq $true -and $TargetEnvironment.ToLower() -ne "integration"){
+    throw "Direct Deploy only works for deployments to the Integration environment."
 }
 
 if($SourceEnvironment -eq $TargetEnvironment){
@@ -107,6 +113,9 @@ if($IncludeCode){
     $startEpiDeploymentSplat.Add("UseMaintenancePage", $UseMaintenancePage)
 }
 
+if($DirectDeploy -eq $true){
+    $startEpiDeploymentSplat.Add("DirectDeploy", $true)
+}
 
 if(![string]::IsNullOrWhiteSpace($ZeroDownTimeMode)){
     $startEpiDeploymentSplat.Add("ZeroDownTimeMode", $ZeroDownTimeMode)
