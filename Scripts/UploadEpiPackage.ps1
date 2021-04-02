@@ -52,7 +52,7 @@ Write-Host "Validation passed. Starting Deployment"
 #If the Module for Az.Storage is not found, install it using the force switch
 if (-not (Get-Module -Name Az.Storage -ListAvailable)) {
     Write-Host "Installing Az.Storage Powershell Module"
-    Uninstall-Module -Name AzureRM
+    Uninstall-Module AzureRM
     Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
 }
 
