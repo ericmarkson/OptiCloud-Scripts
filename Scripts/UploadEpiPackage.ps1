@@ -53,6 +53,7 @@ Write-Host "Validation passed. Starting Deployment"
 if (-not (Get-Module -Name Az.Storage -ListAvailable)) {
     Write-Host "Installing Az.Storage Powershell Module"
     Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+    Uninstall-AzureRm
 }
 
 #Getting the latest Azure Storage Module
