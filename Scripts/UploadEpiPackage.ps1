@@ -49,8 +49,10 @@ if([string]::IsNullOrWhiteSpace($ArtifactPath)){
 
 Write-Host "Validation passed. Starting Deployment"
 
-##Getting the latest Azure Storage Module
-#$env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath
+Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+
+#Getting the latest Azure Storage Module
+$env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath
 
 Write-Host "Searching for NUPKG file..."
 
