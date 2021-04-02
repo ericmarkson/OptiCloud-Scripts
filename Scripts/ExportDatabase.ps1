@@ -5,11 +5,11 @@
 #              specified environment and begin the export, and return a
 #              download link for the bacpac file.
 #
-# Version:     1.0
+# Version:     1.1 - Added Fix for Azure.Storage Error
 #
-# Last Updated: 5/6/2020
+# Last Updated: 4/2/2021
 #
-# Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://www.epivisuals.dev
+# Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
 # License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
 #---------------------------------------------------------------------------

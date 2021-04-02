@@ -6,11 +6,11 @@
 #              Blob, or DB file must be uploaded using the
 #              Add-EpiDeploymentPackage command.
 #
-# Version:     1.1 - Added Zero Downtime Deploy
+# Version:     1.2 - Added Fix for Azure.Storage Error
 #
-# Last Updated: 12/15/2020
+# Last Updated: 4/2/2021
 #
-# Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://www.epivisuals.dev
+# Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
 # License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
 #---------------------------------------------------------------------------
