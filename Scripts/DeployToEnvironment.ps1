@@ -84,6 +84,12 @@ if($packagePath.Length -eq 0){
 
 Write-Host "Package Found. Name:" $packagePath.Name
 
+#If the Module for Az.Storage is not found, install it using the force switch
+if (-not (Get-Module -Name Az.Storage -ListAvailable)) {
+    Write-Host "Installing Az.Storage Powershell Module"
+    Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+}
+
 #If the Module for EpiCloud is not found, install it using the force switch
 if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
     Write-Host "Installing EpiServer Cloud Powershell Module"

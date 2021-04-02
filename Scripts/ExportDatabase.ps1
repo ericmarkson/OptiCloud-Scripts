@@ -55,6 +55,11 @@ if([string]::IsNullOrWhiteSpace($ProjectID)){
     throw "A Project ID GUID is needed. Please supply one."
 }
 
+#If the Module for Az.Storage is not found, install it using the force switch
+if (-not (Get-Module -Name Az.Storage -ListAvailable)) {
+    Write-Host "Installing Az.Storage Powershell Module"
+    Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+}
 
 Write-Host "Validation passed. Starting Database Export Process."
 #If the Module for EpiCloud is not found, install it using the force switch

@@ -55,6 +55,9 @@ if (-not (Get-Module -Name Az.Storage -ListAvailable)) {
     Install-Module -Name Az.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
 }
 
+#Getting the latest Azure Storage Module
+$env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath
+
 Write-Host "Searching for NUPKG file..."
 
 #From the Artifact Path, getting the nupkg file
