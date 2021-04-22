@@ -52,7 +52,7 @@ param
     [String]$SourceApp,
     [Parameter(Position=10)]
     [ValidateSet("ReadOnly", "ReadWrite")]
-    [String]$ZeroDowntimeMode
+    [String]$ZeroDowntimeMode,
     [Parameter(Position=11)]
     [ValidateSet($true, $false, 0, 1)]
     [bool]$DirectDeploy = 0
