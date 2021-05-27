@@ -361,3 +361,5 @@ FodyWeavers.xsd
 
 #Yaml Scripts
 *.yml
+
+!/Scripts/Packages/*.nupkg
