@@ -31,6 +31,7 @@ param
     [Parameter(Position=3)]
     [ValidateNotNullOrEmpty()]
     [string]$ArtifactPath = "./Packages/ProvisionEnvironment.cms.app.1.nupkg",
+    [Parameter(Position=4)]
 	[ValidateSet("Integration", "Preproduction", "Production")]
     [string]$TargetEnvironment
   )
