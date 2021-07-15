@@ -51,8 +51,10 @@ if([string]::IsNullOrWhiteSpace($ProjectID)){
     throw "A Project ID GUID is needed. Please supply one."
 }
 
+if (-not (Get-Module -Name Azure.Storage -ListAvailable)) {
 Write-Host "Installing Azure.Storage Powershell Module"
 Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+}
 
 Write-Host "Validation passed. Starting Asset Downloading Process."
 #If the Module for EpiCloud is not found, install it using the force switch
@@ -75,7 +77,7 @@ Write-Host "Starting the Auth."
 #Starting the Export
 $authenticated = Connect-EpiCloud @startOptiAuth
 
-Write-Host "Authenticated"
+Write-Host "Authenticated. Ready to query Azure."
 
 
 function Test-IsNonInteractiveShell {
@@ -129,7 +131,7 @@ if (($containerInput -eq $null) -or ($containerInput -cgt $containerLength) -or 
 
 $StorageContainerName = $containersForEnv.StorageContainers[$containerInput-1]
 }
-Write-Host "`n$StorageContainerName has been selected as the Storage Container to download"
+Write-Host "`nStorage Container selected to download: $StorageContainerName"
 
 #Setting up the object for getting the SAS Link
 $startOptiSASLink = @{
@@ -138,12 +140,10 @@ $startOptiSASLink = @{
     RetentionHours = "$RetentionHours"
 }
 
-Write-Host "Getting the SAS Link"
+Write-Host "Getting the SAS Link for download permissions"
 
 #Starting the Export
 $saslink = Get-EpiStorageContainerSasLink @startOptiSASLink
-
-$saslink
 
 $saslink.sasLink -match "^(https://)?([^.]+)\.blob\.core([^?]*)?([^.]*)" | Out-Null
 
@@ -153,37 +153,50 @@ $sasToken = $Matches[4]
 ## Function to dlownload all blob contents  
 Function DownloadBlobContents  
 {  
-    Write-Host -ForegroundColor Green "Download blob contents from storage container.."    
+    Write-Host "Creating Azure context based on SAS link and the account name: $storageAccountName"    
     $ctx = New-AzStorageContext -StorageAccountName $storageAccountName -SasToken $sasToken
 
     ## check if folder exists
     $destination=$DownloadLocation+"\"+$StorageContainerName 
     $folderExists=Test-Path -Path $destination 
 
-    if($folderExists)  
+    if($folderExists -eq $false)  
     {  
-        Write-Host -ForegroundColor Magenta $StorageContainerName "- folder exists"    
-    }  
-    else  
-    {        
-        Write-Host -ForegroundColor Magenta $StorageContainerName "- folder does not exist"  
+        Write-Host "`nDownload Location does not exist. Creating it now!"  
         ## Create the new folder  
-        New-Item -ItemType Directory -Path $destination               
-    }    
+        $newStructure = New-Item -ItemType Directory -Path $destination
+        Write-Host "Folder Structure Created At $($newStructure.FullName)"
+    }     
     
-    ## Get the blob contents from the container  
+    Write-Host "`nGetting the blob contents from the container: $StorageContainerName"
     $blobContents=Get-AzStorageBlob -Container $StorageContainerName  -Context $ctx  
 
     $counter = 0
+    $numberOfFiles = $blobContents.count
+    Write-Host "`nDownload Starting..."
+    $elapsedTime = [system.diagnostics.stopwatch]::StartNew()
+    $startTime = Get-Date
     foreach($blobContent in $blobContents)  
     {  
         $counter++
-        $percentComplete = (($counter / $blobContents.count) * 100)
-        Write-Progress -Activity "Downloading $($blobContent.Name)" -PercentComplete $percentComplete
+        $percentComplete = [Math]::Round((($counter / $numberOfFiles) * 100), 2)
+        #do the ratios and "the math" to compute the Estimated Time Of Completion 
+        $elapsedTimeRatio = $(get-date) - $startTime 
+        $estimatedTotalSeconds = $numberOfFiles / $counter * $elapsedTimeRatio.TotalSeconds 
+        $estimatedTotalSecondsTS = New-TimeSpan -seconds $estimatedTotalSeconds
+        $estimatedCompletionTime = $startTime + $estimatedTotalSecondsTS
+        Write-Progress -Activity "Downloading Blobs from $storageAccountName\$StorageContainerName to $destination - $percentComplete% Complete" -Status "Downloading $($blobContent.Name)" -PercentComplete $percentComplete -CurrentOperation "$counter of $numberOfFiles Files Downloaded - Elapsed Time: $([string]::Format("{0:d2}:{1:d2}:{2:d2}", $elapsedTime.Elapsed.hours, $elapsedTime.Elapsed.minutes, $elapsedTime.Elapsed.seconds)) - Estimated Completion at $estimatedCompletionTime"
         Write-Output "##vso[task.setprogress value=$percentComplete]Percent Complete: $percentComplete%" | Out-Null
         ## Download the blob content  
-        Get-AzStorageBlobContent -Container $StorageContainerName  -Context $ctx -Blob $blobContent.Name -Destination $destination -Force | Out-Null
-    } 
+        & {
+            $ProgressPreference = "SilentlyContinue"
+            Get-AzStorageBlobContent -Container $StorageContainerName  -Context $ctx -Blob $blobContent.Name -Destination $destination -Force | Out-Null
+        }
+    }
+    $elapsedTime.stop()
+
+    Write-Host "Download Completed Successfully!`n`nStorage Account Name: $storageAccountName`nContainer Name: $StorageContainerName`nNumber of Files: $numberOfFiles`nStarted at: $startTime`nCompleted at: $(Get-Date)`nTime to Download: $([string]::Format("{0:d2}:{1:d2}:{2:d2}", $elapsedTime.Elapsed.hours, $elapsedTime.Elapsed.minutes, $elapsedTime.Elapsed.seconds))`nDownload Location: $destination`n"
 }   
   
 DownloadBlobContents
+
