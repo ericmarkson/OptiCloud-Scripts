@@ -54,7 +54,7 @@ if([string]::IsNullOrWhiteSpace($ProjectID)){
 Write-Host "Installing Azure.Storage Powershell Module"
 Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
 
-Write-Host "Validation passed. Starting Database Export Process."
+Write-Host "Validation passed. Starting Asset Downloading Process."
 #If the Module for EpiCloud is not found, install it using the force switch
 if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
     Write-Host "Installing EpiServer Cloud Powershell Module"
@@ -77,6 +77,22 @@ $authenticated = Connect-EpiCloud @startOptiAuth
 
 Write-Host "Authenticated"
 
+
+function Test-IsNonInteractiveShell {
+    if ([Environment]::UserInteractive) {
+        foreach ($arg in [Environment]::GetCommandLineArgs()) {
+            # Test each Arg for match of abbreviated '-NonInteractive' command.
+            if ($arg -like '-NonI*') {
+                return $true
+            }
+        }
+    }
+
+    return $false
+}
+
+$IsInTheCloud = $true#Test-IsNonInteractiveShell
+
 #Setting up the object for looking for the storage container
 $startOptiStorageContainerSeek = @{
     Environment  = "$TargetEnvironment"
@@ -98,6 +114,10 @@ $counter = 1;
 foreach($c in $containersForEnv.StorageContainers){
     Write-Host "$counter) $c"
     $counter++;
+    }
+
+    if($IsInTheCloud){
+        throw "Please see above for container names. The PowerShell environment is non-interactive. Please supply a name via the invocation."
     }
 
 [int]$containerInput = Read-Host "Please select which number storage container you want to download"
@@ -125,6 +145,48 @@ $saslink = Get-EpiStorageContainerSasLink @startOptiSASLink
 
 $saslink
 
-$saslink.sasLink
+$saslink.sasLink -match "^(https://)?([^.]+)\.blob\.core([^?]*)?([^.]*)" | Out-Null
 
-Get-AzureStorageBlobContent
+$storageAccountName = $Matches[2]
+$sasToken = $Matches[4]
+
+## Function to dlownload all blob contents  
+Function DownloadBlobContents  
+{  
+    Write-Host -ForegroundColor Green "Download blob contents from storage container.."    
+    $ctx = New-AzStorageContext -StorageAccountName $storageAccountName -SasToken $sasToken
+
+    ## check if folder exists
+    $destination=$DownloadLocation+"\"+$StorageContainerName 
+    $folderExists=Test-Path -Path $destination 
+
+    if($folderExists)  
+    {  
+        Write-Host -ForegroundColor Magenta $StorageContainerName "- folder exists"    
+    }  
+    else  
+    {        
+        Write-Host -ForegroundColor Magenta $StorageContainerName "- folder does not exist"  
+        ## Create the new folder  
+        New-Item -ItemType Directory -Path $destination               
+    }    
+    
+    ## Get the blob contents from the container  
+    $blobContents=Get-AzStorageBlob -Container $StorageContainerName  -Context $ctx  
+
+    $counter = 0
+    foreach($blobContent in $blobContents)  
+    {  
+        $counter++
+        $percentComplete = (($counter / $blobContents.count) * 100)
+        Write-Progress -Activity "Downloading $($blobContent.Name)" -PercentComplete $percentComplete
+        Write-Output "##vso[task.setprogress value=$percentComplete]Percent Complete: $percentComplete%"
+        ## Download the blob content  
+        Get-AzStorageBlobContent -Container $StorageContainerName  -Context $ctx -Blob $blobContent.Name -Destination $destination -Force | Out-Null
+    } 
+}   
+  
+DownloadBlobContents  
+ 
+## Disconnect from Azure Account  
+Disconnect-AzAccount
