@@ -91,7 +91,7 @@ function Test-IsNonInteractiveShell {
     return $false
 }
 
-$IsInTheCloud = $true#Test-IsNonInteractiveShell
+$IsInTheCloud = Test-IsNonInteractiveShell
 
 #Setting up the object for looking for the storage container
 $startOptiStorageContainerSeek = @{
@@ -180,13 +180,10 @@ Function DownloadBlobContents
         $counter++
         $percentComplete = (($counter / $blobContents.count) * 100)
         Write-Progress -Activity "Downloading $($blobContent.Name)" -PercentComplete $percentComplete
-        Write-Output "##vso[task.setprogress value=$percentComplete]Percent Complete: $percentComplete%"
+        Write-Output "##vso[task.setprogress value=$percentComplete]Percent Complete: $percentComplete%" | Out-Null
         ## Download the blob content  
         Get-AzStorageBlobContent -Container $StorageContainerName  -Context $ctx -Blob $blobContent.Name -Destination $destination -Force | Out-Null
     } 
 }   
   
-DownloadBlobContents  
- 
-## Disconnect from Azure Account  
-Disconnect-AzAccount
+DownloadBlobContents
