@@ -7,7 +7,7 @@
 #
 # Version:     1.0 - Initial
 #
-# Last Updated: 6/30/2021
+# Last Updated: 7/15/2021
 #
 # Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
@@ -83,7 +83,7 @@ Write-Host "Authenticated. Ready to query Azure."
 function Test-IsNonInteractiveShell {
     if ([Environment]::UserInteractive) {
         foreach ($arg in [Environment]::GetCommandLineArgs()) {
-            # Test each Arg for match of abbreviated '-NonInteractive' command.
+            #Test each Arg for match of abbreviated '-NonInteractive' command.
             if ($arg -like '-NonI*') {
                 return $true
             }
@@ -150,20 +150,20 @@ $saslink.sasLink -match "^(https://)?([^.]+)\.blob\.core([^?]*)?([^.]*)" | Out-N
 $storageAccountName = $Matches[2]
 $sasToken = $Matches[4]
 
-## Function to dlownload all blob contents  
+#Function to download all blob contents  
 Function DownloadBlobContents  
 {  
     Write-Host "Creating Azure context based on SAS link and the account name: $storageAccountName"    
     $ctx = New-AzStorageContext -StorageAccountName $storageAccountName -SasToken $sasToken
 
-    ## check if folder exists
+    #check if folder exists
     $destination=$DownloadLocation+"\"+$StorageContainerName 
     $folderExists=Test-Path -Path $destination 
 
     if($folderExists -eq $false)  
     {  
         Write-Host "`nDownload Location does not exist. Creating it now!"  
-        ## Create the new folder  
+        #Create the new folder  
         $newStructure = New-Item -ItemType Directory -Path $destination
         Write-Host "Folder Structure Created At $($newStructure.FullName)"
     }     
@@ -188,7 +188,7 @@ Function DownloadBlobContents
         $estimatedCompletionTime = $startTime + $estimatedTotalSecondsTS
         Write-Progress -Activity "Downloading Blobs from $storageAccountName\$StorageContainerName to $destination - $percentComplete% Complete" -Status "Downloading $($blobContent.Name)" -PercentComplete $percentComplete -CurrentOperation "$counter of $numberOfFiles Files Downloaded - Elapsed Time: $([string]::Format("{0:d2}:{1:d2}:{2:d2}", $elapsedTime.Elapsed.hours, $elapsedTime.Elapsed.minutes, $elapsedTime.Elapsed.seconds)) - Estimated Completion at $estimatedCompletionTime"
         Write-Output "##vso[task.setprogress value=$percentComplete]Percent Complete: $percentComplete%" | Out-Null
-        ## Download the blob content  
+        #Download the blob content  
         & {
             $ProgressPreference = "SilentlyContinue"
             Get-AzStorageBlobContent -Container $StorageContainerName  -Context $ctx -Blob $blobContent.Name -Destination $destination -Force | Out-Null
