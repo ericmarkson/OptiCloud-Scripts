@@ -173,9 +173,10 @@ Function DownloadBlobContents
 
     $counter = 0
     $numberOfFiles = $blobContents.count
-    Write-Host "`nDownload Starting..."
+    
     $elapsedTime = [system.diagnostics.stopwatch]::StartNew()
     $startTime = Get-Date
+    Write-Host "`nDownload Starting...Started at: $startTime"
     foreach($blobContent in $blobContents)  
     {  
         $counter++
