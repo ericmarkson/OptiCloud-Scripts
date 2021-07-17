@@ -1,9 +1,9 @@
 ﻿#---------------------------------------------------------------------------
 # Name:        DownloadAssets.ps1
 #
-# Summary:     This script will tell you all of the asset folders that
-#              you have within Azure Blob Storage, and will allow you
-#              to download whichever one you want/need.
+# Summary:     This script will tell you all of the asset containers that
+#              you have within Azure Blob Storage, and will allow you to
+#              download whichever one you want/need, in full.
 #
 # Version:     1.0 - Initial
 #
@@ -121,12 +121,17 @@ foreach($c in $containersForEnv.StorageContainers){
     Write-Host "$counter) $c"
     $counter++;
     }
+    Write-Host "0) ~~Exit Script~~`n"
 
     if($IsInTheCloud){
         throw "Please see above for container names. The PowerShell environment is non-interactive. Please supply a name via the invocation."
     }
 
 [int]$containerInput = Read-Host "Please select which number storage container you want to download"
+
+if($containerInput -eq 0){
+    exit
+}
 
 if (($containerInput -eq $null) -or ($containerInput -cgt $containerLength) -or ($containerInput -le 0)){
     Throw 'Your selection is not valid. Please try again.'
