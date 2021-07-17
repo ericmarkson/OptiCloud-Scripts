@@ -51,6 +51,26 @@ if([string]::IsNullOrWhiteSpace($ProjectID)){
     throw "A Project ID GUID is needed. Please supply one."
 }
 
+#Checking for Non-Interactive Shell
+function Test-IsNonInteractiveShell {
+    if ([Environment]::UserInteractive) {
+        foreach ($arg in [Environment]::GetCommandLineArgs()) {
+            #Test each Arg for match of abbreviated '-NonInteractive' command.
+            if ($arg -like '-NonI*') {
+                return $true
+            }
+        }
+    }
+
+    return $false
+}
+
+$IsInTheCloud = Test-IsNonInteractiveShell
+
+if($IsInTheCloud -eq  $true -and -not [string]::IsNullOrWhiteSpace($StorageContainerName)){
+    Write-Warning "Non-Interactive and/or Cloud shell detected. Functions may be limited for this script based on the parameters passed in."
+}
+
 if (-not (Get-Module -Name Azure.Storage -ListAvailable)) {
 Write-Host "Installing Azure.Storage Powershell Module"
 Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
@@ -78,22 +98,6 @@ Write-Host "Starting the Auth."
 $authenticated = Connect-EpiCloud @startOptiAuth
 
 Write-Host "Authenticated. Ready to query Azure."
-
-
-function Test-IsNonInteractiveShell {
-    if ([Environment]::UserInteractive) {
-        foreach ($arg in [Environment]::GetCommandLineArgs()) {
-            #Test each Arg for match of abbreviated '-NonInteractive' command.
-            if ($arg -like '-NonI*') {
-                return $true
-            }
-        }
-    }
-
-    return $false
-}
-
-$IsInTheCloud = Test-IsNonInteractiveShell
 
 #Setting up the object for looking for the storage container
 $startOptiStorageContainerSeek = @{
@@ -196,7 +200,11 @@ Function DownloadBlobContents
     }
     $elapsedTime.stop()
 
-    Write-Host "Download Completed Successfully!`n`nStorage Account Name: $storageAccountName`nContainer Name: $StorageContainerName`nNumber of Files: $numberOfFiles`nStarted at: $startTime`nCompleted at: $(Get-Date)`nTime to Download: $([string]::Format("{0:d2}:{1:d2}:{2:d2}", $elapsedTime.Elapsed.hours, $elapsedTime.Elapsed.minutes, $elapsedTime.Elapsed.seconds))`nDownload Location: $destination`n"
+    Write-Host "Download Completed Successfully!`n`nStorage Account Name: $storageAccountName`nContainer Name: $StorageContainerName`nNumber of Files: $numberOfFiles`nStarted at: $startTime`nCompleted at: $(Get-Date)`nTime to Download: $([string]::Format("{0:d2}:{1:d2}:{2:d2}", $elapsedTime.Elapsed.hours, $elapsedTime.Elapsed.minutes, $elapsedTime.Elapsed.seconds))`nDownload Location: $destination"
+
+    #Set the Output variable for the Download Location, if needed
+    Write-Host "##vso[task.setvariable variable=DownloadLocation;]'$destination'" | Out-Null
+    Write-Host "`nOutput Variable Created. `nName: DownloadLocation | Value: $destination"
 }   
   
 DownloadBlobContents

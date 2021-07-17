@@ -53,7 +53,7 @@ if([string]::IsNullOrWhiteSpace($TargetEnvironment)){
     throw "A target deployment environment is needed. Please supply one."
 }
 
-Write-Host "If this environment has code on it, this can be destructive."
+Write-Warning "If this environment has code on it, this can be destructive."
 
 $confirmation = Read-Host "Do you want to proceed? 'y' to continue. 'n' to quit"
 if ($confirmation.ToLower() -ne 'y') {
