@@ -8,7 +8,7 @@
 #
 # Version:     1.2 - Ability to download database to local location after export & custom name
 #
-# Last Updated: 7/17/2021
+# Last Updated: 7/18/2021
 #
 # Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
