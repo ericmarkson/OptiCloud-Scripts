@@ -73,7 +73,7 @@ if($IsInTheCloud -eq  $true -and -not [string]::IsNullOrWhiteSpace($StorageConta
 
 if (-not (Get-Module -Name Azure.Storage -ListAvailable)) {
 Write-Host "Installing Azure.Storage Powershell Module"
-Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber -MinimumVersion 4.4.0
 }
 
 Write-Host "Validation passed. Starting Asset Downloading Process."

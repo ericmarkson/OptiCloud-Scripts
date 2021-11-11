@@ -82,7 +82,7 @@ if($IsInTheCloud -eq  $true -and -not [string]::IsNullOrWhiteSpace($DownloadLoca
 
 
 Write-Host "Installing Azure.Storage Powershell Module"
-Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber -MinimumVersion 4.4.0
 
 Write-Host "Validation passed. Starting Database Export Process."
 #If the Module for EpiCloud is not found, install it using the force switch

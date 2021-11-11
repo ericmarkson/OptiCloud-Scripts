@@ -50,7 +50,7 @@ if([string]::IsNullOrWhiteSpace($ArtifactPath)){
 Write-Host "Validation passed. Starting Deployment"
 
 Write-Host "Installing Azure.Storage Powershell Module"
-Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber -MinimumVersion 4.4.0
 
 #Getting the latest Azure Storage Module
 $env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath

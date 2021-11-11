@@ -52,7 +52,7 @@ if([string]::IsNullOrWhiteSpace($ProjectID)){
 }
 
 Write-Host "Installing Azure.Storage Powershell Module"
-Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber
+Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber -MinimumVersion 4.4.0
 
 #If the Module for EpiCloud is not found, install it using the force switch
 if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
