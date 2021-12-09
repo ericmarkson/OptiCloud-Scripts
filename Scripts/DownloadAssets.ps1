@@ -70,12 +70,15 @@ if($IsInTheCloud -eq  $true -and -not [string]::IsNullOrWhiteSpace($StorageConta
 }
 
 Write-Host "Installing EpiCloud Powershell Module"
-Install-Module EpiCloud -Scope CurrentUser -Force -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0
+Install-Module EpiCloud -Scope CurrentUser -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0
 
 if (-not (Get-Module -Name Azure.Storage -ListAvailable)) {
 Write-Host "Installing Azure.Storage Powershell Module"
 Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber -MinimumVersion 4.4.0
 }
+
+#Turning off warnings about Azure Retirement, for now...
+Set-Item Env:\SuppressAzureRmModulesRetiringWarning "true"
 
 Write-Host "Validation passed. Starting Asset Downloading Process."
 
@@ -159,7 +162,7 @@ $sasToken = $Matches[4]
 Function DownloadBlobContents  
 {  
     Write-Host "Creating Azure context based on SAS link and the account name: $storageAccountName"    
-    $ctx = New-AzStorageContext -StorageAccountName $storageAccountName -SasToken $sasToken
+    $ctx = New-AzureStorageContext -StorageAccountName $storageAccountName -SasToken $sasToken
 
     #check if folder exists
     $destination=$DownloadLocation+"\"+$StorageContainerName 
@@ -174,7 +177,7 @@ Function DownloadBlobContents
     }     
     
     Write-Host "`nGetting the blob contents from the container: $StorageContainerName"
-    $blobContents=Get-AzStorageBlob -Container $StorageContainerName  -Context $ctx  
+    $blobContents=Get-AzureStorageBlob -Container $StorageContainerName  -Context $ctx  
 
     $counter = 0
     $numberOfFiles = $blobContents.count
@@ -196,7 +199,7 @@ Function DownloadBlobContents
         #Download the blob content  
         & {
             $ProgressPreference = "SilentlyContinue"
-            Get-AzStorageBlobContent -Container $StorageContainerName  -Context $ctx -Blob $blobContent.Name -Destination $destination -Force | Out-Null
+            Get-AzureStorageBlobContent -Container $StorageContainerName  -Context $ctx -Blob $blobContent.Name -Destination $destination -Force | Out-Null
         }
     }
     $elapsedTime.stop()

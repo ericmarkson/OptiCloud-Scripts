@@ -70,7 +70,7 @@ if($DirectDeploy -eq $true -and $TargetEnvironment.ToLower() -ne "integration"){
 }
 
 Write-Host "Installing EpiCloud Powershell Module"
-Install-Module EpiCloud -Scope CurrentUser -Force -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0
+Install-Module EpiCloud -Scope CurrentUser -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0
 
 Write-Host "Validation passed. Starting Deployment to" $TargetEnvironment 
 Write-Host "Searching for NUPKG file..."
