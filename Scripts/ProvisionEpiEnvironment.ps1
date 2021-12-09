@@ -4,10 +4,8 @@
 # Summary:     This script will provision a brand new Opti
 #              environment without pushing new code. (Usually
 #              the Preproduction and Production environments)
-#              
-# Version:     1.0
 #
-# Last Updated: 5/27/2021
+# Last Updated: 12/8/2021
 #
 # Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #

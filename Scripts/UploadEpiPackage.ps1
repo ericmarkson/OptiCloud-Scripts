@@ -5,9 +5,7 @@
 #              release and push it up to a selected environment. This is
 #              developed to be used in the DevOps Release Pipeline.
 #
-# Version:     1.0
-#
-# Last Updated: 4/2/2021
+# Last Updated: 12/8/2021
 #
 # Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
@@ -49,8 +47,8 @@ if([string]::IsNullOrWhiteSpace($ArtifactPath)){
 
 Write-Host "Validation passed. Starting Deployment"
 
-Write-Host "Installing Azure.Storage Powershell Module"
-Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber -MinimumVersion 4.4.0
+Write-Host "Installing EpiCloud Powershell Module"
+Install-Module EpiCloud -Scope CurrentUser -Force -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0
 
 #Getting the latest Azure Storage Module
 $env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath
@@ -67,11 +65,7 @@ if($packagePath.Length -eq 0){
 
 Write-Host "Package Found. Name: " $packagePath.Name
 
-#If the Module for EpiCloud is not found, install it using the force switch
-if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-    Write-Host "Installing EpiServer Cloud Powershell Module"
-    Install-Module EpiCloud -Scope CurrentUser -Force
-}
+
 
 Write-Host "Setting up the deployment configuration"
 #Setting up the object for the Epi Deployment. This is found in the PAAS portal settings.

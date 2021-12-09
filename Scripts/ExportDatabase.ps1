@@ -6,9 +6,7 @@
 #              download link for the bacpac file. This will also download
 #              the database file based on the input params.
 #
-# Version:     1.2 - Ability to download database to local location after export & custom name
-#
-# Last Updated: 7/18/2021
+# Last Updated: 12/8/2021
 #
 # Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
@@ -80,16 +78,11 @@ if($IsInTheCloud -eq  $true -and -not [string]::IsNullOrWhiteSpace($DownloadLoca
     Write-Warning "Non-Interactive and/or Cloud shell detected. Functions may be limited for this script based on the parameters passed in."
 }
 
-
-Write-Host "Installing Azure.Storage Powershell Module"
-Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber -MinimumVersion 4.4.0
+Write-Host "Installing EpiCloud Powershell Module"
+Install-Module EpiCloud -Scope CurrentUser -Force -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0
 
 Write-Host "Validation passed. Starting Database Export Process."
-#If the Module for EpiCloud is not found, install it using the force switch
-if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-    Write-Host "Installing EpiServer Cloud Powershell Module"
-    Install-Module EpiCloud -Scope CurrentUser -Force
-}
+
 
 Write-Host "Setting up the export configuration"
 

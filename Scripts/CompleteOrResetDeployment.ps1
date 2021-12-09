@@ -5,9 +5,7 @@
 #              that is waiting on the second-stage approval to push live.
 #              (Swapping the App Service slot)
 #
-# Version:     1.1 - Added Fix for Azure.Storage Error
-#
-# Last Updated: 4/2/2021
+# Last Updated: 12/8/2021
 #
 # Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
@@ -51,14 +49,8 @@ if([string]::IsNullOrWhiteSpace($ProjectID)){
     throw "A Project ID GUID is needed. Please supply one."
 }
 
-Write-Host "Installing Azure.Storage Powershell Module"
-Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber -MinimumVersion 4.4.0
-
-#If the Module for EpiCloud is not found, install it using the force switch
-if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-    Write-Host "Installing EpiServer Cloud Powershell Module"
-    Install-Module EpiCloud -Scope CurrentUser -Force
-}
+Write-Host "Installing EpiCloud Powershell Module"
+Install-Module EpiCloud -Scope CurrentUser -Force -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0
 
 Write-Host "Validation passed. Starting $Action"
 
