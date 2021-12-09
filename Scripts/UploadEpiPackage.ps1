@@ -48,7 +48,7 @@ if([string]::IsNullOrWhiteSpace($ArtifactPath)){
 Write-Host "Validation passed. Starting Deployment"
 
 Write-Host "Installing EpiCloud Powershell Module"
-Install-Module EpiCloud -Scope CurrentUser -Force -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0
+Install-Module EpiCloud -Scope CurrentUser -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0
 
 #Getting the latest Azure Storage Module
 $env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath
