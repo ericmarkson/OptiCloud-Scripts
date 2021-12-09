@@ -4,10 +4,8 @@
 # Summary:     This script will provision a brand new Opti
 #              environment without pushing new code. (Usually
 #              the Preproduction and Production environments)
-#              
-# Version:     1.0
 #
-# Last Updated: 5/27/2021
+# Last Updated: 12/8/2021
 #
 # Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
@@ -30,10 +28,13 @@ param
     [string]$ProjectID,
     [Parameter(Position=3)]
     [ValidateNotNullOrEmpty()]
-    [string]$ArtifactPath = "./Packages/ProvisionEnvironment.cms.app.1.nupkg",
+    [string]$ArtifactPath,
     [Parameter(Position=4)]
 	[ValidateSet("Integration", "Preproduction", "Production")]
-    [string]$TargetEnvironment
+    [string]$TargetEnvironment,
+    [Parameter(Position=5)]
+    [ValidateSet($true, $false, 0, 1)]
+    [bool]$NetCore = 0
   )
 
 #Checking that the required params exist and are not white space
@@ -46,12 +47,17 @@ if([string]::IsNullOrWhiteSpace($ClientSecret)){
 if([string]::IsNullOrWhiteSpace($ProjectID)){
     throw "A Project ID GUID is needed. Please supply one."
 }
-if([string]::IsNullOrWhiteSpace($ArtifactPath)){
-    throw "A path for the NUPKG file location is needed. Please supply one."
-}
 if([string]::IsNullOrWhiteSpace($TargetEnvironment)){
     throw "A target deployment environment is needed. Please supply one."
 }
+
+if([string]::IsNullOrWhiteSpace($ArtifactPath) -and $NetCore -eq $true){
+    $ArtifactPath = "./Packages/ProvisionEnvironmentCore.cms.app.1.nupkg"
+}
+elseif([string]::IsNullOrWhiteSpace($ArtifactPath) -and $NetCore -eq $false){
+    $ArtifactPath = "./Packages/ProvisionEnvironment.cms.app.1.nupkg"
+}
+
 
 Write-Warning "If this environment has code on it, this can be destructive."
 

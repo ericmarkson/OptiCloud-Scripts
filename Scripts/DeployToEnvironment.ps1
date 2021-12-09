@@ -6,9 +6,7 @@
 #              Blob, or DB file must be uploaded using the
 #              Add-EpiDeploymentPackage command.
 #
-# Version:     1.2 - Added Fix for Azure.Storage Error
-#
-# Last Updated: 4/2/2021
+# Last Updated: 12/8/2021
 #
 # Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
@@ -71,6 +69,9 @@ if($DirectDeploy -eq $true -and $TargetEnvironment.ToLower() -ne "integration"){
     throw "Direct Deploy only works for deployments to the Integration environment."
 }
 
+Write-Host "Installing EpiCloud Powershell Module"
+Install-Module EpiCloud -Scope CurrentUser -Force -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0
+
 Write-Host "Validation passed. Starting Deployment to" $TargetEnvironment 
 Write-Host "Searching for NUPKG file..."
 
@@ -84,14 +85,6 @@ if($packagePath.Length -eq 0){
 
 Write-Host "Package Found. Name:" $packagePath.Name
 
-Write-Host "Installing Azure.Storage Powershell Module"
-Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber -MinimumVersion 4.4.0
-
-#If the Module for EpiCloud is not found, install it using the force switch
-if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-    Write-Host "Installing EpiServer Cloud Powershell Module"
-    Install-Module EpiCloud -Scope CurrentUser -Force
-}
 
 Write-Host "Setting up the deployment configuration"
 

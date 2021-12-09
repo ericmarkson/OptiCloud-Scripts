@@ -5,9 +5,7 @@
 #              you have within Azure Blob Storage, and will allow you to
 #              download whichever one you want/need, in full.
 #
-# Version:     1.0 - Initial
-#
-# Last Updated: 7/15/2021
+# Last Updated: 12/8/2021
 #
 # Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
@@ -71,17 +69,15 @@ if($IsInTheCloud -eq  $true -and -not [string]::IsNullOrWhiteSpace($StorageConta
     Write-Warning "Non-Interactive and/or Cloud shell detected. Functions may be limited for this script based on the parameters passed in."
 }
 
+Write-Host "Installing EpiCloud Powershell Module"
+Install-Module EpiCloud -Scope CurrentUser -Force -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0
+
 if (-not (Get-Module -Name Azure.Storage -ListAvailable)) {
 Write-Host "Installing Azure.Storage Powershell Module"
 Install-Module -Name Azure.Storage -Scope CurrentUser -Repository PSGallery -Force -AllowClobber -MinimumVersion 4.4.0
 }
 
 Write-Host "Validation passed. Starting Asset Downloading Process."
-#If the Module for EpiCloud is not found, install it using the force switch
-if (-not (Get-Module -Name EpiCloud -ListAvailable)) {
-    Write-Host "Installing EpiServer Cloud Powershell Module"
-    Install-Module EpiCloud -Scope CurrentUser -Force
-}
 
 Write-Host "Setting up the export configuration"
 
