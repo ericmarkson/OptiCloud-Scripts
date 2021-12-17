@@ -85,8 +85,32 @@ if(![string]::IsNullOrWhiteSpace($ZeroDowntimeMode) -and ($IncludeCode -ne $true
     throw "Zero Downtime Deployment requires code to be pushed. Please use the -IncludeCode flag, and also include the -SourceApp flag"
 }
 
-Write-Host "Installing EpiCloud Powershell Module"
-Install-Module EpiCloud -Scope CurrentUser -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0
+#Checking for Non-Interactive Shell
+function Test-IsNonInteractiveShell {
+    if ([Environment]::UserInteractive) {
+        foreach ($arg in [Environment]::GetCommandLineArgs()) {
+            #Test each Arg for match of abbreviated '-NonInteractive' command.
+            if ($arg -like '-NonI*') {
+                return $true
+            }
+        }
+    }
+
+    return $false
+}
+
+$IsInTheCloud = Test-IsNonInteractiveShell
+
+if($IsInTheCloud -eq  $true)
+{
+   Write-Host "Non-Interactive and/or Cloud shell detected. Force Installing EpiCloud Powershell Module"
+   Install-Module EpiCloud -Scope CurrentUser -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0 -Force
+}  
+else
+{
+   Write-Host "Installing EpiCloud Powershell Module"
+   Install-Module EpiCloud -Scope CurrentUser -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0     
+}
 
 Write-Host "Validation passed. Starting Deployment from $SourceEnvironment to $TargetEnvironment"
 
