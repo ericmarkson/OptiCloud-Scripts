@@ -69,8 +69,17 @@ if($IsInTheCloud -eq  $true -and -not [string]::IsNullOrWhiteSpace($StorageConta
     Write-Warning "Non-Interactive and/or Cloud shell detected. Functions may be limited for this script based on the parameters passed in."
 }
 
-Write-Host "Installing EpiCloud Powershell Module"
-Install-Module EpiCloud -Scope CurrentUser -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0
+
+if($IsInTheCloud -eq  $true)
+{
+   Write-Host "Non-Interactive and/or Cloud shell detected. Force Installing EpiCloud Powershell Module"
+   Install-Module EpiCloud -Scope CurrentUser -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0 -Force
+}  
+else
+{
+   Write-Host "Installing EpiCloud Powershell Module"
+   Install-Module EpiCloud -Scope CurrentUser -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0     
+}
 
 if (-not (Get-Module -Name Azure.Storage -ListAvailable)) {
 Write-Host "Installing Azure.Storage Powershell Module"

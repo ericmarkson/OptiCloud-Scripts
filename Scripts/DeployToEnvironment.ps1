@@ -69,8 +69,32 @@ if($DirectDeploy -eq $true -and $TargetEnvironment.ToLower() -ne "integration"){
     throw "Direct Deploy only works for deployments to the Integration environment."
 }
 
-Write-Host "Installing EpiCloud Powershell Module"
-Install-Module EpiCloud -Scope CurrentUser -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0
+#Checking for Non-Interactive Shell
+function Test-IsNonInteractiveShell {
+    if ([Environment]::UserInteractive) {
+        foreach ($arg in [Environment]::GetCommandLineArgs()) {
+            #Test each Arg for match of abbreviated '-NonInteractive' command.
+            if ($arg -like '-NonI*') {
+                return $true
+            }
+        }
+    }
+
+    return $false
+}
+
+$IsInTheCloud = Test-IsNonInteractiveShell
+
+if($IsInTheCloud -eq  $true)
+{
+   Write-Host "Non-Interactive and/or Cloud shell detected. Force Installing EpiCloud Powershell Module"
+   Install-Module EpiCloud -Scope CurrentUser -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0 -Force
+}  
+else
+{
+   Write-Host "Installing EpiCloud Powershell Module"
+   Install-Module EpiCloud -Scope CurrentUser -Repository PSGallery -AllowClobber -MinimumVersion 1.0.0     
+}
 
 Write-Host "Validation passed. Starting Deployment to" $TargetEnvironment 
 Write-Host "Searching for NUPKG file..."
