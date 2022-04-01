@@ -6,7 +6,7 @@
 #
 # Last Updated: 12/8/2021
 #
-# Author: Eric Markson - eric.markson@perficient.com | eric@ericmarkson.com | https://optimizelyvisuals.dev/
+# Author: Eric Markson - eric@optimizelyvisuals.dev | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
 # License: GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
 #---------------------------------------------------------------------------
