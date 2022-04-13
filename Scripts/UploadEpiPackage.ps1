@@ -107,11 +107,18 @@ $packageLocation = Get-EpiDeploymentPackageLocation @getEpiDeploymentPackageLoca
 Write-Host "Blob Location Found: " $packageLocation 
 Write-Host "Starting Upload..." 
 
+try{
 #Uploading the package to the Blob location
 $deploy = Add-EpiDeploymentPackage -SasUrl $packageLocation -Path $packagePath.FullName
 
 $deploy
 
 Write-Host "Upload Success. Files are ready for deploy into environments."
-
-
+}
+catch{
+    if($_ -like "*already linked to a deployment*"){
+        Write-Host "Package with filename" $packagePath.Name "already exists. Files are ready for deploy into environments."
+    }else{
+        Write-Error $_
+    }
+}
