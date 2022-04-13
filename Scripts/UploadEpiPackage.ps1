@@ -5,7 +5,7 @@
 #              release and push it up to a selected environment. This is
 #              developed to be used in the DevOps Release Pipeline.
 #
-# Last Updated: 12/8/2021
+# Last Updated: 4/13/2022
 #
 # Author: Eric Markson - eric@optimizelyvisuals.dev | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
