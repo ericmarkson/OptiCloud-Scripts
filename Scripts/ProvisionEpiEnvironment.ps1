@@ -5,7 +5,7 @@
 #              environment without pushing new code. (Usually
 #              the Preproduction and Production environments)
 #
-# Last Updated: 12/8/2021
+# Last Updated: 7/21/2022
 #
 # Author: Eric Markson - eric@optimizelyvisuals.dev | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
@@ -30,7 +30,13 @@ param
     [ValidateNotNullOrEmpty()]
     [string]$ArtifactPath,
     [Parameter(Position=4)]
-	[ValidateSet("Integration", "Preproduction", "Production")]
+    [ValidateScript({
+      If ($_ -match "^(Integration|Preproduction|Production|ADE\d+)$") {
+        $True
+      }
+      else {
+        Throw "Valid environment names are Integration, Preproduction, Production, or ADE#"
+      }})]
     [string]$TargetEnvironment,
     [Parameter(Position=5)]
     [ValidateSet($true, $false, 0, 1)]
@@ -50,6 +56,7 @@ if([string]::IsNullOrWhiteSpace($ProjectID)){
 if([string]::IsNullOrWhiteSpace($TargetEnvironment)){
     throw "A target deployment environment is needed. Please supply one."
 }
+
 
 if([string]::IsNullOrWhiteSpace($ArtifactPath) -and $NetCore -eq $true){
     $ArtifactPath = "./Packages/ProvisionEnvironmentCore.cms.app.1.nupkg"
