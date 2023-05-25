@@ -174,7 +174,7 @@ $status = $currDeploy | Select -ExpandProperty "status"
 $exit = 0
 
 Write-Host "Percent Complete: $percentComplete%"
-Write-Output "##vso[task.setprogress value=$percentComplete]Percent Complete: $percentComplete%"
+Write-Output "##vso[task.setprogress value=$percentComplete]Percent Complete: $percentComplete%"> $null
 
 #While the exit flag is not true
 while($exit -ne 1){
@@ -190,7 +190,7 @@ $status = $currDeploy | Select -ExpandProperty "status"
 #(This is done this way to prevent a bunch of messages to the screen)
 if($currPercent -ne $percentComplete){
     Write-Host "Percent Complete: $currPercent%"
-    Write-Output "##vso[task.setprogress value=$currPercent]Percent Complete: $currPercent%"
+    Write-Output "##vso[task.setprogress value=$currPercent]Percent Complete: $currPercent%"> $null
     #Set the overall percent complete variable to the new percent complete
     $percentComplete = $currPercent
 }
@@ -218,6 +218,6 @@ if($status -eq "Failed"){
 Write-Host "Deployment Complete"
 
 #Set the Output variable for the Deployment ID, if needed
-Write-Output "##vso[task.setvariable variable=DeploymentId;]'$deployId'"
+Write-Output "##vso[task.setvariable variable=DeploymentId;]'$deployId'"> $null
 Write-Verbose "Output Variable Created. Name: DeploymentId | Value: $deployId"
-Write-Output "##vso[task.complete result=Succeeded;]"
+Write-Output "##vso[task.complete result=Succeeded;]"> $null

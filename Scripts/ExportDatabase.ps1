@@ -188,14 +188,14 @@ $downloadLink = $currExport | Select -ExpandProperty "downloadLink"
 Write-Host "`nExport Finished. Download URL is: $downloadLink `n"
 
 #Set the Output variable for the Export URL, if needed
-Write-Output "##vso[task.setvariable variable=ExportDownload;]'$downloadLink'" | Out-Null
+Write-Output "##vso[task.setvariable variable=ExportDownload;]'$downloadLink'"> $null
 Write-Host "Output Variable Created. `nName: ExportDownload | Value: $downloadLink"
 
 if(-not [string]::IsNullOrWhiteSpace($DownloadLocation)){
     
     Write-Host "`n`nStarting the download process..."
 
-    $downloadLink -match "^(https://)?([^.]+)\.blob\.core([^?]*)/([^?]*)?([^.]*)" | Out-Null
+    $downloadLink -match "^(https://)?([^.]+)\.blob\.core([^?]*)/([^?]*)?([^.]*)"> $null
 
     $fileName = "{0}_{1}" -f $Matches[2],$Matches[4]
     if(-not [string]::IsNullOrWhiteSpace($DownloadFileName)){
@@ -236,11 +236,11 @@ if(-not [string]::IsNullOrWhiteSpace($DownloadLocation)){
         Write-Host "Download Completed Successfully!`n`nDownload Location: $destination`nFile Name: $fileName`nStarted at: $startTime`nCompleted at: $(Get-Date)`nTime to Download: $([string]::Format("{0:d2}:{1:d2}:{2:d2}", $elapsedTime.Elapsed.hours, $elapsedTime.Elapsed.minutes, $elapsedTime.Elapsed.seconds))"
 
         #Set the Output variable for the Download Location, if needed
-        Write-Output "##vso[task.setvariable variable=DownloadLocation;]'$destination'" | Out-Null
+        Write-Output "##vso[task.setvariable variable=DownloadLocation;]'$destination'"> $null
         Write-Host "`nOutput Variable Created. `nName: DownloadLocation | Value: $destination"
 
         #Set the Output variable for the Saved Filename, if needed
-        Write-Output "##vso[task.setvariable variable=FileName;]'$fileName'" | Out-Null
+        Write-Output "##vso[task.setvariable variable=FileName;]'$fileName'"> $null
         Write-Host "`nOutput Variable Created. `nName: FileName | Value: $fileName"
     }   
   

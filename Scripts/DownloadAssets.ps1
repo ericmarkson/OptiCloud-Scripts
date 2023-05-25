@@ -29,11 +29,11 @@ param
     [Parameter(Position=3, Mandatory)]
     [ValidateNotNullOrEmpty()]
     [ValidateScript({
-      If ($_ -match "^(Integration|Preproduction|Production|ADE\d+)$") {
+      If ($_ -match "^(Integration|General|Preproduction|Production|ADE\d+)$") {
         $True
       }
       else {
-        Throw "Valid environment names are Integration, Preproduction, Production, or ADE#"
+        Throw "Valid environment names are Integration, Preproduction, Production, General, or ADE#"
       }})]
     [string]$TargetEnvironment,
     [Parameter(Position=4, Mandatory)]
@@ -41,7 +41,9 @@ param
     [Parameter(Position=5)]
     [String]$StorageContainerName,
     [Parameter(Position=6)]
-    [String]$RetentionHours=5
+    [String]$RetentionHours=5,
+    [Parameter(Position=7)]
+    [int]$DownloadAmount=0
   )
 
 #Checking that the required params exist and are not white space
@@ -168,7 +170,7 @@ Write-Host "Getting the SAS Link for download permissions"
 #Starting the Export
 $saslink = Get-EpiStorageContainerSasLink @startOptiSASLink
 
-$saslink.sasLink -match "^(https://)?([^.]+)\.blob\.core([^?]*)?([^.]*)" | Out-Null
+$saslink.sasLink -match "^(https://)?([^.]+)\.blob\.core([^?]*)?([^.]*)"> $null
 
 $storageAccountName = $Matches[2]
 $sasToken = $Matches[4]
@@ -199,6 +201,10 @@ Function DownloadBlobContents
     
     $elapsedTime = [system.diagnostics.stopwatch]::StartNew()
     $startTime = Get-Date
+    if($DownloadAmount -gt 0){
+        $blobContents = $blobContents | Sort-Object -Descending LastModified | Select-Object -Last $DownloadAmount
+    }
+
     Write-Host "`nDownload Starting...Started at: $startTime"
     foreach($blobContent in $blobContents)  
     {  
@@ -210,11 +216,11 @@ Function DownloadBlobContents
         $estimatedTotalSecondsTS = New-TimeSpan -seconds $estimatedTotalSeconds
         $estimatedCompletionTime = $startTime + $estimatedTotalSecondsTS
         Write-Progress -Activity "Downloading Blobs from $storageAccountName\$StorageContainerName to $destination - $percentComplete% Complete" -Status "Downloading $($blobContent.Name)" -PercentComplete $percentComplete -CurrentOperation "$counter of $numberOfFiles Files Downloaded - Elapsed Time: $([string]::Format("{0:d2}:{1:d2}:{2:d2}", $elapsedTime.Elapsed.hours, $elapsedTime.Elapsed.minutes, $elapsedTime.Elapsed.seconds)) - Estimated Completion at $estimatedCompletionTime"
-        Write-Output "##vso[task.setprogress value=$percentComplete]Percent Complete: $percentComplete%" | Out-Null
+        Write-Output "##vso[task.setprogress value=$percentComplete]Percent Complete: $percentComplete%"> $null
         #Download the blob content  
         & {
             $ProgressPreference = "SilentlyContinue"
-            Get-AzureStorageBlobContent -Container $StorageContainerName  -Context $ctx -Blob $blobContent.Name -Destination $destination -Force | Out-Null
+            Get-AzureStorageBlobContent -Container $StorageContainerName  -Context $ctx -Blob $blobContent.Name -Destination $destination -Force> $null
         }
     }
     $elapsedTime.stop()
@@ -222,7 +228,7 @@ Function DownloadBlobContents
     Write-Host "Download Completed Successfully!`n`nStorage Account Name: $storageAccountName`nContainer Name: $StorageContainerName`nNumber of Files: $numberOfFiles`nStarted at: $startTime`nCompleted at: $(Get-Date)`nTime to Download: $([string]::Format("{0:d2}:{1:d2}:{2:d2}", $elapsedTime.Elapsed.hours, $elapsedTime.Elapsed.minutes, $elapsedTime.Elapsed.seconds))`nDownload Location: $destination"
 
     #Set the Output variable for the Download Location, if needed
-    Write-Host "##vso[task.setvariable variable=DownloadLocation;]'$destination'" | Out-Null
+    Write-Host "##vso[task.setvariable variable=DownloadLocation;]'$destination'" >$null
     Write-Host "`nOutput Variable Created. `nName: DownloadLocation | Value: $destination"
 }   
   
