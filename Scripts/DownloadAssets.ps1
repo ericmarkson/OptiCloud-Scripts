@@ -197,14 +197,14 @@ Function DownloadBlobContents
     $blobContents=Get-AzureStorageBlob -Container $StorageContainerName  -Context $ctx  
 
     $counter = 0
-    $numberOfFiles = $blobContents.count
+    
     
     $elapsedTime = [system.diagnostics.stopwatch]::StartNew()
     $startTime = Get-Date
     if($DownloadAmount -gt 0){
         $blobContents = $blobContents | Sort-Object -Descending LastModified | Select-Object -Last $DownloadAmount
     }
-
+    $numberOfFiles = $blobContents.count
     Write-Host "`nDownload Starting...Started at: $startTime"
     foreach($blobContent in $blobContents)  
     {  
@@ -220,7 +220,7 @@ Function DownloadBlobContents
         #Download the blob content  
         & {
             $ProgressPreference = "SilentlyContinue"
-            Get-AzureStorageBlobContent -Container $StorageContainerName  -Context $ctx -Blob $blobContent.Name -Destination $destination -Force> $null
+            Get-AzureStorageBlobContent -Container $StorageContainerName  -Context $ctx -Blob $blobContent.Name -Destination $destination -Force > $null
         }
     }
     $elapsedTime.stop()
