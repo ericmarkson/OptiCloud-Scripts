@@ -6,7 +6,7 @@
 #              Blob, or DB file must be uploaded using the
 #              Add-EpiDeploymentPackage command.
 #
-# Last Updated: 12/8/2021
+# Last Updated: 7/21/2022
 #
 # Author: Eric Markson - eric@optimizelyvisuals.dev | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
@@ -32,7 +32,13 @@ param
     [string]$ArtifactPath,
     [Parameter(Position=4, Mandatory)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet("Integration", "Preproduction", "Production")]
+    [ValidateScript({
+      If ($_ -match "^(Integration|Preproduction|Production|ADE\d+)$") {
+        $True
+      }
+      else {
+        Throw "Valid environment names are Integration, Preproduction, Production, or ADE#"
+      }})]
     [string]$TargetEnvironment,
     [Parameter(Position=5, Mandatory)]
     [ValidateNotNullOrEmpty()]

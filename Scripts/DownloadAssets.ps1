@@ -5,7 +5,7 @@
 #              you have within Azure Blob Storage, and will allow you to
 #              download whichever one you want/need, in full.
 #
-# Last Updated: 12/8/2021
+# Last Updated: 7/21/2022
 #
 # Author: Eric Markson - eric@optimizelyvisuals.dev | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
@@ -28,7 +28,13 @@ param
     [string]$ProjectID,
     [Parameter(Position=3, Mandatory)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet("Integration", "Preproduction", "Production")]
+    [ValidateScript({
+      If ($_ -match "^(Integration|Preproduction|Production|ADE\d+)$") {
+        $True
+      }
+      else {
+        Throw "Valid environment names are Integration, Preproduction, Production, or ADE#"
+      }})]
     [string]$TargetEnvironment,
     [Parameter(Position=4, Mandatory)]
     [String]$DownloadLocation,

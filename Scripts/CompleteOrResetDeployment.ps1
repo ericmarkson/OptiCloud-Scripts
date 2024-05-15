@@ -5,7 +5,7 @@
 #              that is waiting on the second-stage approval to push live.
 #              (Swapping the App Service slot)
 #
-# Last Updated: 12/8/2021
+# Last Updated: 7/21/2022
 #
 # Author: Eric Markson - eric@optimizelyvisuals.dev | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
@@ -33,7 +33,13 @@ param
     [Parameter(Position=4)]
     [string]$DeploymentId,
     [Parameter(Position=5, Mandatory)]
-    [ValidateSet("Integration", "Preproduction", "Production")]
+    [ValidateScript({
+      If ($_ -match "^(Integration|Preproduction|Production|ADE\d+)$") {
+        $True
+      }
+      else {
+        Throw "Valid environment names are Integration, Preproduction, Production, or ADE#"
+      }})]
     [ValidateNotNullOrEmpty()]
     [string]$targetEnvironment
   )

@@ -4,7 +4,7 @@
 # Summary:     This script will take the Code, Database, and/or the Blobs 
 #              from an environment and promote them to another environment
 #
-# Last Updated: 12/8/2021
+# Last Updated: 7/21/2022
 #
 # Author: Eric Markson - eric@optimizelyvisuals.dev | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
@@ -27,11 +27,23 @@ param
     [string]$ProjectID,
     [Parameter(Position=3, Mandatory)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet("Integration", "Preproduction", "Production")]
+    [ValidateScript({
+      If ($_ -match "^(Integration|Preproduction|Production|ADE\d+)$") {
+        $True
+      }
+      else {
+        Throw "Valid environment names are Integration, Preproduction, Production, or ADE#"
+      }})]
     [string]$SourceEnvironment,
     [Parameter(Position=4, Mandatory)]
     [ValidateNotNullOrEmpty()]
-    [ValidateSet("Integration", "Preproduction", "Production")]
+    [ValidateScript({
+      If ($_ -match "^(Integration|Preproduction|Production|ADE\d+)$") {
+        $True
+      }
+      else {
+        Throw "Valid environment names are Integration, Preproduction, Production, or ADE#"
+      }})]
     [string]$TargetEnvironment,
     [Parameter(Position=5)]
     [ValidateSet($true, $false, 0, 1)]
