@@ -5,7 +5,7 @@
 #              release and push it up to a selected environment. This is
 #              developed to be used in the DevOps Release Pipeline.
 #
-# Last Updated: 4/13/2022
+# Last Updated: 5/15/2024
 #
 # Author: Eric Markson - eric@optimizelyvisuals.dev | eric@ericmarkson.com | https://optimizelyvisuals.dev/
 #
@@ -28,7 +28,10 @@ param
     [string]$ProjectID,
     [Parameter(Position=3, Mandatory)]
     [ValidateNotNullOrEmpty()]
-    [string]$ArtifactPath
+    [string]$ArtifactPath,
+    [Parameter(Position=4)]
+    [ValidateNotNullOrEmpty()]
+    [string]$FileExtension = "nupkg"
   )
 
 #Checking that the required params exist and are not white space
@@ -42,7 +45,7 @@ if([string]::IsNullOrWhiteSpace($ProjectID)){
     throw "A Project ID GUID is needed. Please supply one."
 }
 if([string]::IsNullOrWhiteSpace($ArtifactPath)){
-    throw "A path for the NUPKG file location is needed. Please supply one."
+    throw "A path for the Deployment file location is needed. Please supply one."
 }
 
 Write-Host "Validation passed. Starting Deployment"
@@ -77,14 +80,20 @@ else
 #Getting the latest Azure Storage Module
 $env:PSModulePath = "C:\Modules\azurerm_6.7.0;" + $env:PSModulePath
 
-Write-Host "Searching for NUPKG file..."
+Write-Host "Searching for " $FileExtension " file..."
 
-#From the Artifact Path, getting the nupkg file
-$packagePath = Get-ChildItem -Path $ArtifactPath -Filter *.nupkg
+$filter = "*." + $FileExtension
 
-#If no NUPKG file is found, throw error and exit
+#From the Artifact Path, getting the file
+$packagePath = Get-ChildItem -Path $ArtifactPath -Filter $filter
+
+#If no file is found, throw error and exit
 if($packagePath.Length -eq 0){
-    throw "No NUPKG files were found. Please ensure you're passing the correct path."
+    throw "No " + $FileExtension + " files were found. Please ensure you're passing the correct path."
+}
+
+if($packagePath.Length -gt 1){
+    $packagePath = $packagePath[0]
 }
 
 Write-Host "Package Found. Name: " $packagePath.Name

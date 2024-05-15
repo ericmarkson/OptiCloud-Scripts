@@ -1,9 +1,9 @@
 ﻿#---------------------------------------------------------------------------
-# Name:        ProvisionOptiEnvironment.ps1
+# Name:        ImportDatabase.ps1
 #
-# Summary:     This script will provision a brand new Opti
-#              environment without pushing new code. (Usually
-#              the Preproduction and Production environments)
+# Summary:     This script will take a BACPAC file and import it into the
+#              selected environment database. Process will first Upload the
+#              BACPAC file to the Azure Blob Storage, then deploy it using DirectDeploy.
 #
 # Last Updated: 5/15/2024
 #
@@ -38,9 +38,9 @@ param
         Throw "Valid environment names are Integration, Preproduction, Production, or ADE#"
       }})]
     [string]$TargetEnvironment,
-    [Parameter(Position=5)]
-    [ValidateSet($true, $false, 0, 1)]
-    [bool]$NetCore = 1
+    [Parameter(Position=5, Mandatory)]
+    [ValidateSet('cms','commerce')]
+    [String] $DatabaseName
   )
 
 #Checking that the required params exist and are not white space
@@ -53,18 +53,15 @@ if([string]::IsNullOrWhiteSpace($ClientSecret)){
 if([string]::IsNullOrWhiteSpace($ProjectID)){
     throw "A Project ID GUID is needed. Please supply one."
 }
+if([string]::IsNullOrWhiteSpace($ArtifactPath)){
+    throw "A path for the NUPKG file location is needed. Please supply one."
+}
 if([string]::IsNullOrWhiteSpace($TargetEnvironment)){
     throw "A target deployment environment is needed. Please supply one."
 }
-
-
-if([string]::IsNullOrWhiteSpace($ArtifactPath) -and $NetCore -eq $true){
-    $ArtifactPath = "./Packages/ProvisionEnvironmentCore.cms.app.1.nupkg"
+if($DirectDeploy -eq $true -and $TargetEnvironment.ToLower() -ne "integration"){
+    throw "Direct Deploy only works for deployments to the Integration environment."
 }
-elseif([string]::IsNullOrWhiteSpace($ArtifactPath) -and $NetCore -eq $false){
-    $ArtifactPath = "./Packages/ProvisionEnvironment.cms.app.1.nupkg"
-}
-
 
 Write-Warning "If this environment has code on it, this can be destructive."
 
@@ -78,8 +75,6 @@ Push-Location $dir
 
 .\UploadEpiPackage.ps1 -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectID $ProjectID -ArtifactPath $ArtifactPath
 
-.\DeployToEnvironment.ps1 -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectID $ProjectID -ArtifactPath $ArtifactPath -TargetEnvironment $TargetEnvironment -UseMaintenancePage $false
-
-.\CompleteOrResetDeployment.ps1 -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectID $ProjectID -TargetEnvironment $TargetEnvironment -Action "Reset"
+.\DeployToEnvironment.ps1 -ClientKey $ClientKey -ClientSecret $ClientSecret -ProjectID $ProjectID -ArtifactPath $ArtifactPath -TargetEnvironment $TargetEnvironment -DirectDeploy $true -UseMaintenancePage $false
 
 Pop-Location
