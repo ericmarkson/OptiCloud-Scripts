@@ -29,11 +29,11 @@ param
     [Parameter(Position=3, Mandatory)]
     [ValidateNotNullOrEmpty()]
     [ValidateScript({
-      If ($_ -match "^(Integration|Preproduction|Production|ADE\d+)$") {
+      If ($_ -match "^(General|Integration|Preproduction|Production|ADE\d+)$") {
         $True
       }
       else {
-        Throw "Valid environment names are Integration, Preproduction, Production, or ADE#"
+        Throw "Valid environment names are General, Integration, Preproduction, Production, or ADE#"
       }})]
     [string]$TargetEnvironment,
     [Parameter(Position=4, Mandatory)]
