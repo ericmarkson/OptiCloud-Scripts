@@ -141,11 +141,13 @@ $startEpiDeploymentSplat = @{
 
 if($IncludeCode){
     $startEpiDeploymentSplat.Add("SourceApp", $SourceApp)
-    $startEpiDeploymentSplat.Add("UseMaintenancePage", $UseMaintenancePage)
 }
 
 if($DirectDeploy -eq $true){
     $startEpiDeploymentSplat.Add("DirectDeploy", $true)
+}
+if($UseMaintenancePage -eq $true){
+    $startEpiDeploymentSplat.Add("UseMaintenancePage", $true)
 }
 
 if(![string]::IsNullOrWhiteSpace($ZeroDownTimeMode)){
@@ -212,7 +214,8 @@ start-sleep -Milliseconds 1000
 
 #If the status is set to Failed, throw an error
 if($status -eq "Failed"){
-    throw "Deployment Failed. Errors: \n" + $deploy.deploymentErrors
+    $errors = $currDeploy | Select -ExpandProperty deploymentErrors
+    throw "Deployment Failed. Errors: \n" + $errors
 }
 
 Write-Host "Deployment Complete"

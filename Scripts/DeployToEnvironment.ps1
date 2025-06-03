@@ -124,13 +124,15 @@ $startEpiDeploymentSplat = @{
     ProjectId = "$ProjectID"
     Wait = $false
     TargetEnvironment = "$TargetEnvironment"
-    UseMaintenancePage = $UseMaintenancePage
     ClientSecret = "$ClientSecret"
     ClientKey = "$ClientKey"
 }
 
 if($DirectDeploy -eq $true){
     $startEpiDeploymentSplat.Add("DirectDeploy", $true)
+}
+if($UseMaintenancePage -eq $true){
+    $startEpiDeploymentSplat.Add("UseMaintenancePage", $true)
 }
 
 
@@ -199,10 +201,14 @@ start-sleep -Milliseconds 1000
 #If the status is set to Failed, throw an error
 if($status -eq "Failed"){
     Write-Output "##vso[task.complete result=Failed;]"
-    throw "Deployment Failed. Errors: \n" + $deploy.deploymentErrors
+    $errors = $currDeploy | Select -ExpandProperty deploymentErrors
+    throw "Deployment Failed. Errors: \n" + $errors
 }
 
+#Get links for validation
+$validationLinks = $currDeploy | Select -ExpandProperty validationLinks
 Write-Host "Deployment Complete"
+Write-Host "Please verify at $validationLinks"
 
 #Set the Output variable for the Deployment ID, if needed
 Write-Output "##vso[task.setvariable variable=DeploymentId;]'$deployId'"
